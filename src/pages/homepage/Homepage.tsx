@@ -74,7 +74,7 @@ function Boards({ boards, onClick }: BoardsProps) {
             </Link>
           ))}
       </View>
-      <Button title="Create New Board" onClick={onClick} variant="secondary" />
+      <Button title="Create New Board" onClick={onClick} variant="alternative" />
     </View>
   );
 }
@@ -87,7 +87,7 @@ type Styles = {
 
 const styles: Styles = {
   container: {
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.gray,
     borderRadius: 20,
     marginLeft: 50,
     padding: 20

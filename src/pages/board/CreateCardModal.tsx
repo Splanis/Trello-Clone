@@ -120,7 +120,11 @@ type Styles = {
 
 const styles: Styles = {
   textarea: {
-    margin: '0 10px'
+    margin: '0 10px',
+    padding: '10px',
+    border: 'none',
+    resize: 'none',
+    fontSize: '1rem'
   },
   input: {
     margin: '0 10px',

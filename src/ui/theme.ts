@@ -1,10 +1,11 @@
 export const theme = {
   colors: {
     light: '#fff4f2',
-    dark: '#c4c4c4',
+    gray: '#c4c4c4',
     black: '#000',
     white: '#fff',
     primary: '#ffdfdf',
+    dark: '#be9191',
     secondary: '#a7fcdc',
     alternative: '#fffedf',
     labels: {

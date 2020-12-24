@@ -25,7 +25,7 @@ export function Card(props: Props) {
           {...provided.dragHandleProps}
           isDragging={snapshot.isDragging}>
           <Text text={card.name} style={styles.text} />
-          <View justify="flex-start" style={{ marginTop: 10 }}>
+          <View justify="flex-start" style={styles.card}>
             {card.labels &&
               card.labels.map((l) => (
                 <Text
@@ -56,12 +56,12 @@ type Styles = {
 };
 
 const styles: Styles = {
-  card: {
-    padding: '10px',
-    borderRadius: '6px',
-    margin: '10px'
-  },
-
+  // card: {
+  //   padding: '10px',
+  //   borderRadius: '6px',
+  //   margin: '10px'
+  // },
+  card: { marginTop: 10 },
   text: {
     wordBreak: 'break-all'
   },
