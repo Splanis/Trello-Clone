@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { db } from '../../../firebase/firebase';
-import { ILabel } from '../../models/Board';
+import { IBoard, ILabel } from '../../models/Board';
 import {
   createNewCardAction,
   createNewListAction,
@@ -23,6 +23,10 @@ export const loadBoard = (id: string) => (dispatch: any) => {
 
 export const unloadBoard = () => (dispatch: any) => {
   dispatch(unloadBoardAction());
+};
+
+export const saveBoard = (payload: { board: IBoard; id: string }) => (dispatch: any) => {
+  db.collection('boards').doc(payload.id).set(payload.board);
 };
 
 export const moveCard = (payload: {
