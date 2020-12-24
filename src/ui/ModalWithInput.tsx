@@ -51,7 +51,8 @@ type Styles = {
 const styles: Styles = {
   input: {
     padding: '10px',
-    fontSize: '1rem'
+    fontSize: '1rem',
+    width: '100%'
   },
 
   button: {
