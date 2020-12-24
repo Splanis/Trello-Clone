@@ -5,12 +5,13 @@ type Props = {
   title: string;
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'alternative';
+  style?: CSSProperties;
 };
 
-export function Button({ title, variant = 'primary', onClick }: Props) {
+export function Button({ title, variant = 'primary', onClick, style }: Props) {
   return (
     <button
-      style={{ ...button, backgroundColor: theme.colors[variant] }}
+      style={{ ...button, backgroundColor: theme.colors[variant], ...style }}
       onClick={onClick}>
       {title}
     </button>
