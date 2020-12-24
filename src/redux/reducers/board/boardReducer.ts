@@ -3,6 +3,7 @@ import { State } from '../rootReducer';
 import { v4 as uuid } from 'uuid';
 import { IBoard } from '../../models/Board';
 import { Action } from './actions';
+import { theme } from '../../../ui/theme';
 
 // Initial State
 export const createInitialBoard = (name: string) => ({
@@ -12,7 +13,13 @@ export const createInitialBoard = (name: string) => ({
     {
       id: uuid(),
       name: 'Todo',
-      cards: []
+      cards: [
+        {
+          id: uuid(),
+          name: 'My First Task',
+          labels: [{ label: 'important', color: theme.colors.labels.green }]
+        }
+      ]
     },
     {
       id: uuid(),
