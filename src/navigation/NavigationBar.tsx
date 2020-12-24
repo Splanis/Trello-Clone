@@ -27,10 +27,7 @@ export function NavigationBar() {
       ) : (
         <View>
           <Link to="/login">
-            <Button title="Login" variant="secondary" />
-          </Link>
-          <Link to="/register">
-            <Button title="Register" variant="alternative" />
+            <Button title="Login" variant="alternative" />
           </Link>
         </View>
       )}
