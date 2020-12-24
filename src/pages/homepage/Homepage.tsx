@@ -35,7 +35,7 @@ export function Homepage() {
     setLoading(false);
   }, [dispatch, userId]);
 
-  if (loading || !boards)
+  if (loading)
     return (
       <View page>
         <Spinner />
@@ -67,11 +67,12 @@ function Boards({ boards, onClick }: BoardsProps) {
     <View direction="column" style={styles.container}>
       <Text text="My Boards" fontSize={30} style={styles.text} />
       <View direction="column" style={styles.text}>
-        {boards.map((board) => (
-          <Link key={board.id} to={`/board/${board.id}`} style={styles.button}>
-            <Button title={board.name} variant="primary" />
-          </Link>
-        ))}
+        {boards &&
+          boards.map((board) => (
+            <Link key={board.id} to={`/board/${board.id}`} style={styles.button}>
+              <Button title={board.name} variant="primary" />
+            </Link>
+          ))}
       </View>
       <Button title="Create New Board" onClick={onClick} variant="secondary" />
     </View>

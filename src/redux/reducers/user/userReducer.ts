@@ -3,10 +3,15 @@ import { State } from '../rootReducer';
 import { Action } from './actions';
 
 // Initial State
-const initialState = null;
+const initialState = {
+  username: '',
+  uid: '',
+  accessToken: '',
+  boards: []
+};
 
 // Types
-export type IUserState = IUser | null;
+export type IUserState = IUser;
 
 // Reducer
 export const userReducer = (state: IUserState = initialState, action: Action) => {
@@ -39,6 +44,6 @@ export const userReducer = (state: IUserState = initialState, action: Action) =>
 };
 
 // Selectors
-export const selectUser = (state: State) => state.user;
-export const selectUserId = (state: State) => state.user?.uid;
-export const selectBoards = (state: State) => state.user?.boards;
+export const selectUser = (state: State) => (state.user.accessToken ? state.user : null);
+export const selectUserId = (state: State) => state.user.uid;
+export const selectBoards = (state: State) => state.user.boards;
