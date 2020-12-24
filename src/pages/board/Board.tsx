@@ -149,7 +149,7 @@ export function Board() {
             type="droppable-list"
             direction="horizontal">
             {(provided) => (
-              <View ref={provided.innerRef}>
+              <div ref={provided.innerRef}>
                 <View style={styles.lists}>
                   {board &&
                     board.lists.map((list, index) => (
@@ -162,7 +162,7 @@ export function Board() {
                     ))}
                   {provided.placeholder}
                 </View>
-              </View>
+              </div>
             )}
           </Droppable>
           <View
