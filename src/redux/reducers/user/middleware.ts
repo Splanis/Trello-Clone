@@ -38,15 +38,12 @@ export const createBoard = (payload: { name: string; id: string }) => (dispatch:
     .then(() => {
       db.collection('users')
         .doc(payload.id)
-        .set({
-          boards: firestoreField.arrayUnion({ id: board.id, name: payload.name })
+        .update({
+          boards: firestoreField.arrayUnion(payload)
         });
       dispatch(createBoardAction({ name: payload.name, id: board.id }));
     })
     .catch((error) => console.log(error));
-  // db.collection('users')
-  //   .doc(userId)
-  //   .update({ boards: firestoreField.arrayUnion(boardId) });
 };
 
 export const loadBoards = (payload: { userId: string }) => (dispatch: any) => {
