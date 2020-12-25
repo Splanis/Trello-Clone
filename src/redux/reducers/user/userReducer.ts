@@ -26,21 +26,18 @@ export const userReducer = (state: IUserState = initialState, action: Action) =>
     case 'SIGN_OUT':
       return initialState;
     case 'CREATE_BOARD':
-      if (!state) return state;
       return {
         ...state,
         boards: [...state.boards, action.payload]
       };
     case 'LOAD_BOARDS':
-      if (!state) return state;
       return {
         ...state,
         boards: action.payload
       };
     default:
-      break;
+      return state;
   }
-  return state;
 };
 
 // Selectors

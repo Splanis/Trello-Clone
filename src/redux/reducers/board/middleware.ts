@@ -1,3 +1,4 @@
+import { Dispatch } from 'redux';
 import { v4 as uuid } from 'uuid';
 import { db } from '../../../firebase/firebase';
 import { IBoard, ILabel } from '../../models/Board';
@@ -5,27 +6,39 @@ import {
   createNewCardAction,
   createNewListAction,
   loadBoardAction,
+  loadBoardFailedAction,
   moveCardAction,
   moveListAction,
   unloadBoardAction
 } from './actions';
 import { dataIsBoard } from './predicates';
 
-export const loadBoard = (id: string) => (dispatch: any) => {
+export const loadBoard = (payload: { userId: string; boardId: string }) => (
+  dispatch: Dispatch
+) => {
   db.collection('boards')
-    .doc(id)
+    .doc(payload.boardId)
     .get()
-    .then((board) => {
-      // @ts-ignore
-      if (dataIsBoard(board.data())) dispatch(loadBoardAction(board.data()));
+    .then((b) => {
+      const board = b.data();
+      db.collection('users')
+        .doc(payload.userId)
+        .get()
+        .then((user) => {
+          const userBoards = user.data()?.boards;
+          const hasBoard = userBoards.find((b) => b.id === board?.id);
+          if (!board || !hasBoard)
+            return dispatch(loadBoardFailedAction({ error: 'Board not found :(' }));
+          if (dataIsBoard(board) && hasBoard) dispatch(loadBoardAction(board));
+        });
     });
 };
 
-export const unloadBoard = () => (dispatch: any) => {
+export const unloadBoard = () => (dispatch: Dispatch) => {
   dispatch(unloadBoardAction());
 };
 
-export const saveBoard = (payload: { board: IBoard; id: string }) => (dispatch: any) => {
+export const saveBoard = (payload: { board: IBoard; id: string }) => () => {
   db.collection('boards').doc(payload.id).set(payload.board);
 };
 
@@ -35,12 +48,12 @@ export const moveCard = (payload: {
   destinationId: string;
   destinationIdx: number;
   draggableId: string;
-}) => (dispatch: any) => {
+}) => (dispatch: Dispatch) => {
   dispatch(moveCardAction(payload));
 };
 
 export const moveList = (payload: { sourceIdx: number; destinationIdx: number }) => (
-  dispatch: any
+  dispatch: Dispatch
 ) => {
   dispatch(moveListAction(payload));
 };
@@ -49,13 +62,12 @@ export const createNewCard = (payload: {
   listId: string;
   name: string;
   labels: ILabel[];
-}) => (dispatch: any) => {
+}) => (dispatch: Dispatch) => {
   const id = uuid();
-  console.log(payload);
   dispatch(createNewCardAction({ ...payload, id }));
 };
 
-export const createNewList = (payload: { name: string }) => (dispatch: any) => {
+export const createNewList = (payload: { name: string }) => (dispatch: Dispatch) => {
   const id = uuid();
   dispatch(createNewListAction({ name: payload.name, id }));
 };

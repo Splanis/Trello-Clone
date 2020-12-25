@@ -1,8 +1,12 @@
-import React, { CSSProperties, useEffect, useReducer, useState } from 'react';
+import React, { CSSProperties, useEffect, useReducer } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { selectBoard } from '../../redux/reducers/board/boardReducer';
+import {
+  selectBoard,
+  selectBoardError,
+  selectBoardLoading
+} from '../../redux/reducers/board/boardReducer';
 import {
   createNewCard,
   createNewList,
@@ -13,6 +17,7 @@ import {
   unloadBoard
 } from '../../redux/reducers/board/middleware';
 import { State } from '../../redux/reducers/rootReducer';
+import { selectUserId } from '../../redux/reducers/user/userReducer';
 import { ModalWithInput } from '../../ui/ModalWithInput';
 import { Spinner } from '../../ui/Spinner';
 import { Text } from '../../ui/Text';
@@ -46,8 +51,10 @@ export function Board() {
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
   const state = useSelector((state: State) => state);
+  const userId = selectUserId(state);
   const board = selectBoard(state);
-  const [loading, setLoading] = useState<boolean>(true);
+  const boardLoading = selectBoardLoading(state);
+  const boardError = selectBoardError(state);
   const [modalState, modalDispatch] = useReducer(reducer, initialState);
   const modalStatus = selectStatus(modalState);
   const listName = selectListName(modalState);
@@ -113,13 +120,12 @@ export function Board() {
   };
 
   useEffect(() => {
-    dispatch(loadBoard(id));
-    setLoading(false);
+    dispatch(loadBoard({ boardId: id, userId }));
 
     return () => {
       dispatch(unloadBoard());
     };
-  }, [id, dispatch]);
+  }, [id, userId, dispatch]);
 
   useEffect(() => {
     if (board && board.id) {
@@ -127,12 +133,14 @@ export function Board() {
     }
   }, [board, dispatch]);
 
-  if (!board || loading || !board.name)
+  if (boardLoading)
     return (
       <View page>
         <Spinner />
       </View>
     );
+
+  if (!board || boardError) return <View page>{boardError}</View>;
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
