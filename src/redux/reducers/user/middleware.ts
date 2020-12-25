@@ -22,6 +22,14 @@ export const signIn = () => (dispatch: Dispatch) => {
 
         if (uid && username && accessToken)
           dispatch(signInAction({ uid, username, accessToken }));
+
+        db.collection('users')
+          .doc(uid)
+          .get()
+          .then((u) => {
+            const user = u.data();
+            if (!user) db.collection('users').doc(uid).set({ boards: [] });
+          });
       }
     })
     .catch((error) => console.log(error));
@@ -35,6 +43,7 @@ export const createBoard = (payload: { name: string; id: string }) => (
   dispatch: Dispatch
 ) => {
   const board = createInitialBoard(payload.name);
+  console.log(payload);
   db.collection('boards')
     .doc(board.id)
     .set(board)
