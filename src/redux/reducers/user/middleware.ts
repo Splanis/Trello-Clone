@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import { Dispatch } from 'redux';
 import { auth, db, firestoreField } from '../../../firebase/firebase';
 import { createInitialBoard } from '../board/boardReducer';
 import {
@@ -8,7 +9,7 @@ import {
   signOutAction
 } from './actions';
 
-export const signIn = () => (dispatch: any) => {
+export const signIn = () => (dispatch: Dispatch) => {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth
     .signInWithPopup(provider)
@@ -26,11 +27,13 @@ export const signIn = () => (dispatch: any) => {
     .catch((error) => console.log(error));
 };
 
-export const signOut = () => (dispatch: any) => {
+export const signOut = () => (dispatch: Dispatch) => {
   dispatch(signOutAction());
 };
 
-export const createBoard = (payload: { name: string; id: string }) => (dispatch: any) => {
+export const createBoard = (payload: { name: string; id: string }) => (
+  dispatch: Dispatch
+) => {
   const board = createInitialBoard(payload.name);
   db.collection('boards')
     .doc(board.id)
@@ -39,19 +42,19 @@ export const createBoard = (payload: { name: string; id: string }) => (dispatch:
       db.collection('users')
         .doc(payload.id)
         .update({
-          boards: firestoreField.arrayUnion(payload)
+          boards: firestoreField.arrayUnion({ name: payload.name, id: board.id })
         });
       dispatch(createBoardAction({ name: payload.name, id: board.id }));
     })
     .catch((error) => console.log(error));
 };
 
-export const loadBoards = (payload: { userId: string }) => (dispatch: any) => {
+export const loadBoards = (payload: { userId: string }) => (dispatch: Dispatch) => {
   db.collection('users')
     .doc(payload.userId)
     .get()
     .then((doc) => {
-      const boards = doc.data()?.boards;
+      const boards = doc.data()?.boards || [];
       dispatch(loadBoardsAction(boards));
     });
 };
