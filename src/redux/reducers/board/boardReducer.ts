@@ -1,4 +1,4 @@
-import { move } from '../../../utlis/move';
+import { moveItem } from '../../../utils/handleArrays';
 import { State } from '../rootReducer';
 import { v4 as uuid } from 'uuid';
 import { IBoard } from '../../models/Board';
@@ -34,14 +34,15 @@ export const createInitialBoard = (name: string) => ({
   ]
 });
 
+const emptyBoard: IBoard = { name: '', id: '', lists: [] };
 const initialState = {
-  name: '',
-  id: '',
-  lists: []
+  board: emptyBoard,
+  loading: true,
+  error: undefined
 };
 
 // Types
-export type IBoardState = IBoard | undefined;
+export type IBoardState = { board: IBoard; loading: boolean; error: string | undefined };
 
 // Actions
 
@@ -49,64 +50,85 @@ export type IBoardState = IBoard | undefined;
 export const boardReducer = (state: IBoardState = initialState, action: Action) => {
   switch (action.type) {
     case 'LOAD_BOARD':
-      return { ...state, ...action.payload };
+      return { ...state, board: action.payload, error: undefined, loading: false };
+    case 'LOAD_BOARD_FAILED':
+      return { ...state, board: emptyBoard, error: action.payload.error, loading: false };
     case 'UNLOAD_BOARD':
-      return { ...state, ...initialState };
+      return initialState;
     case 'MOVE_LIST':
       return {
         ...state,
-        lists: move(state.lists, action.payload.sourceIdx, action.payload.destinationIdx)
+        board: {
+          ...state.board,
+          lists: moveItem(
+            state.board.lists,
+            action.payload.sourceIdx,
+            action.payload.destinationIdx
+          )
+        }
       };
     case 'MOVE_CARD':
       if (action.payload.sourceId === action.payload.destinationId) {
         return {
           ...state,
-          lists: state.lists.map((list) => {
-            if (list.id === action.payload.sourceId) {
-              return {
-                ...list,
-                cards: move(
-                  list.cards,
-                  action.payload.sourceIdx,
-                  action.payload.destinationIdx
-                )
-              };
-            }
-            return list;
-          })
+          board: {
+            ...state.board,
+            lists: state.board.lists.map((list) => {
+              if (list.id === action.payload.sourceId) {
+                return {
+                  ...list,
+                  cards: moveItem(
+                    list.cards,
+                    action.payload.sourceIdx,
+                    action.payload.destinationIdx
+                  )
+                };
+              }
+              return list;
+            })
+          }
         };
       }
 
-      const list = state!.lists.find((list) => list.id === action.payload.sourceId);
+      const list = state.board.lists.find((list) => list.id === action.payload.sourceId);
       const card = list?.cards.find((card) => card.id === action.payload.draggableId);
 
       if (!card) return state;
 
       return {
         ...state,
-        lists: state.lists.map((list) => {
-          if (list.id === action.payload.sourceId) {
-            list.cards.splice(action.payload.sourceIdx, 1);
-          }
-          if (list.id === action.payload.destinationId) {
-            list.cards.splice(action.payload.destinationIdx, 0, card);
-          }
-          return list;
-        })
+        board: {
+          ...state.board,
+          lists: state.board.lists.map((list) => {
+            if (list.id === action.payload.sourceId) {
+              list.cards.splice(action.payload.sourceIdx, 1);
+            }
+            if (list.id === action.payload.destinationId) {
+              list.cards.splice(action.payload.destinationIdx, 0, card);
+            }
+            return list;
+          })
+        }
       };
     case 'CREATE_NEW_LIST':
       return {
         ...state,
-        lists: [...state.lists, { ...action.payload, cards: [] }]
+        board: {
+          ...state.board,
+          lists: [...state.board.lists, { ...action.payload, cards: [] }]
+        }
       };
     case 'CREATE_NEW_CARD':
       return {
         ...state,
-        lists: state.lists.map((list) => {
-          if (list.id === action.payload.listId) {
-            return { ...list, cards: [...list.cards, action.payload] };
-          } else return list;
-        })
+        board: {
+          ...state.board,
+          lists: state.board.lists.map((list) => {
+            if (list.id === action.payload.listId) {
+              return { ...list, cards: [...list.cards, action.payload] };
+            } else return list;
+          })
+        }
       };
     default:
       return state;
@@ -114,4 +136,7 @@ export const boardReducer = (state: IBoardState = initialState, action: Action) 
 };
 
 // Selectors
-export const selectBoard = (state: State) => state.board;
+export const selectBoard = (state: State) =>
+  state.board.board.id ? state.board.board : undefined;
+export const selectBoardLoading = (state: State) => state.board.loading;
+export const selectBoardError = (state: State) => state.board.error;

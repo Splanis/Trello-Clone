@@ -11,7 +11,7 @@ export const dataIsBoard = (data: any): data is IBoard => {
     return false;
   if (data.lists.length > 0)
     if (data.lists.some((list: any) => !dataIsList(list))) return false;
-  console.log(data);
+
   return true;
 };
 

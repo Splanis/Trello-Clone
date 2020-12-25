@@ -2,6 +2,7 @@ import { IList } from '../../models/Board';
 
 export type Action = ReturnType<
   | typeof loadBoardAction
+  | typeof loadBoardFailedAction
   | typeof unloadBoardAction
   | typeof moveListAction
   | typeof moveCardAction
@@ -11,6 +12,9 @@ export type Action = ReturnType<
 
 export const loadBoardAction = (payload: { id: string; name: string; lists: IList[] }) =>
   <const>{ type: 'LOAD_BOARD', payload: payload };
+
+export const loadBoardFailedAction = (payload: { error: string }) =>
+  <const>{ type: 'LOAD_BOARD_FAILED', payload: payload };
 
 export const unloadBoardAction = () => <const>{ type: 'UNLOAD_BOARD' };
 
