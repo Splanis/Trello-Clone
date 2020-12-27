@@ -177,7 +177,7 @@ export function Board() {
             justify="flex-start"
             style={styles.addListButton}
             onClick={() => modalDispatch(openNewListModal())}>
-            <View>+ Add New List</View>
+            <Text text="+ Add New List" fontSize={20} style={styles.addListButtonText} />
           </View>
         </View>
       </View>
@@ -210,6 +210,7 @@ export function Board() {
 type Styles = {
   container: CSSProperties;
   addListButton: CSSProperties;
+  addListButtonText: CSSProperties;
   lists: CSSProperties;
   title: CSSProperties;
 };
@@ -225,9 +226,10 @@ const styles: Styles = {
     fontSize: '1.3rem',
     fontWeight: 700,
     borderRadius: '20px',
-    backgroundColor: theme.colors.secondary,
+    backgroundColor: theme.colors.alternative,
     width: '250px',
     height: '50px',
     cursor: 'pointer'
-  }
+  },
+  addListButtonText: { color: theme.colors.white }
 };

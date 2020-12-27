@@ -13,14 +13,14 @@ export function NavigationBar() {
   const user = selectUser(state);
 
   return (
-    <View justify="space-between" style={navigation}>
+    <View justify="space-between" style={styles.navigation}>
       <Link to="/" style={{ textDecoration: 'none' }}>
-        <Text text="Trello Clone" style={logo} />
+        <Text text="Trello Clone" style={styles.logo} />
       </Link>
       {user ? (
         <View>
           <Button title={user.username} variant="secondary" />
-          <Link to="/logout">
+          <Link to="/logout" style={styles.button}>
             <Button title="Logout" variant="alternative" />
           </Link>
         </View>
@@ -35,16 +35,26 @@ export function NavigationBar() {
   );
 }
 
-const navigation: CSSProperties = {
-  paddingRight: '20px',
-  width: '100%',
-  position: 'fixed',
-  height: '60px',
-  backgroundColor: theme.colors.secondary
+type Styles = {
+  navigation: CSSProperties;
+  logo: CSSProperties;
+  button: CSSProperties;
 };
 
-const logo: CSSProperties = {
-  fontSize: '40px',
-  color: theme.colors.black,
-  marginLeft: '10px'
+const styles: Styles = {
+  navigation: {
+    paddingRight: '20px',
+    width: '100%',
+    position: 'fixed',
+    height: '60px',
+    backgroundColor: theme.colors.primary
+  },
+  logo: {
+    fontSize: '40px',
+    color: theme.colors.white,
+    marginLeft: '10px'
+  },
+  button: {
+    marginLeft: '20px'
+  }
 };

@@ -11,7 +11,12 @@ type Props = {
 export function Button({ title, variant = 'primary', onClick, style }: Props) {
   return (
     <button
-      style={{ ...button, backgroundColor: theme.colors[variant], ...style }}
+      style={{
+        ...button,
+        backgroundColor: theme.colors[variant],
+        color: variant === 'secondary' ? theme.colors.black : theme.colors.white,
+        ...style
+      }}
       onClick={onClick}>
       {title}
     </button>

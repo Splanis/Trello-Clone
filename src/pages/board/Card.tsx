@@ -43,10 +43,10 @@ export function Card(props: Props) {
 // QUICK-FIX: Can't add inline styles
 const CardStyled = styled.div<{ isDragging: boolean }>`
   padding: 10px;
-  background: ${({ isDragging }) =>
-    isDragging ? theme.colors.secondary : theme.colors.alternative};
+  background: ${theme.colors.light};
   border-radius: 6px;
   margin: 10px;
+  box-shadow: ${({ isDragging }) => isDragging && theme.shadow.big};
 `;
 
 type Styles = {

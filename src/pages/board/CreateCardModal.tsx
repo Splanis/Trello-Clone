@@ -96,13 +96,13 @@ export function CreateCardModal(props: Props) {
         <Button
           onClick={onClose}
           title="Cancel"
-          variant="primary"
+          variant="alternative"
           style={styles.button}
         />
         <Button
           onClick={onCreate}
           title="Create"
-          variant="secondary"
+          variant="primary"
           style={styles.button}
         />
       </View>

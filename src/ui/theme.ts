@@ -1,13 +1,13 @@
 export const theme = {
   colors: {
-    light: '#fff4f2',
+    light: '#f4f4ef',
     gray: '#c4c4c4',
     black: '#000',
     white: '#fff',
-    primary: '#ffdfdf',
-    dark: '#be9191',
-    secondary: '#a7fcdc',
-    alternative: '#fffedf',
+    dark: '#a3a599',
+    primary: '#20232a',
+    secondary: '#acbebe',
+    alternative: '#a01d26',
     labels: {
       green: '#317140',
       red: '#f51720',

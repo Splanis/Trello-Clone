@@ -31,15 +31,8 @@ export function List(props: Props) {
             </div>
             <Text text={issues} />
           </View>
-          <View
-            onClick={onClick}
-            style={{
-              backgroundColor: theme.colors.alternative,
-              padding: 10,
-              margin: 10,
-              borderRadius: 6
-            }}>
-            <Text text="+ Add New Card" />
+          <View onClick={onClick} style={styles.addCardButton}>
+            <Text text="+ Add New Card" style={styles.addCardButtonText} />
           </View>
           <Droppable droppableId={list.id} type="droppable-cards" direction="vertical">
             {(provided, snapshot) => (
@@ -47,8 +40,8 @@ export function List(props: Props) {
                 style={{
                   ...styles.cards,
                   backgroundColor: snapshot.isDraggingOver
-                    ? theme.colors.dark
-                    : theme.colors.primary
+                    ? theme.colors.primary
+                    : theme.colors.secondary
                 }}
                 ref={provided.innerRef}>
                 {list.cards.map((card, index) => (
@@ -70,7 +63,7 @@ const ListStyled = styled.div`
   flex-direction: column;
   box-shadow: ${theme.shadow.primary};
   border-radius: 20px;
-  background-color: ${theme.colors.primary};
+  background-color: ${theme.colors.secondary};
   padding: 20px 0;
   width: 250px;
   margin: 0 10px;
@@ -81,6 +74,8 @@ type Styles = {
   title: CSSProperties;
   header: CSSProperties;
   cards: CSSProperties;
+  addCardButton: CSSProperties;
+  addCardButtonText: CSSProperties;
 };
 
 const styles: Styles = {
@@ -107,5 +102,12 @@ const styles: Styles = {
     minHeight: 1,
     scrollbarWidth: 'thin',
     scrollbarColor: `${theme.colors.dark} ${theme.colors.primary}`
-  }
+  },
+  addCardButton: {
+    backgroundColor: theme.colors.primary,
+    padding: 10,
+    margin: 10,
+    borderRadius: 6
+  },
+  addCardButtonText: { color: theme.colors.white }
 };

@@ -11,7 +11,6 @@ export const GlobalStyle = createGlobalStyle`
     body {
         background-color: ${theme.colors.light};
         font-family:  ${theme.fonts.primary};
-        height: 100vh;
-        
+        height: 100vh;  
     }
 `;
