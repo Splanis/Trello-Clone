@@ -10,13 +10,17 @@ export const colors = [
 
 export enum ModalStatus {
   HIDDEN,
-  NEWLIST,
-  NEWCARD
+  NEW_LIST,
+  NEW_CARD,
+  DELETE_CARD,
+  DELETE_LIST
 }
 
 export type Action = ReturnType<
   | typeof openNewListModal
   | typeof openNewCardModal
+  | typeof openDeleteListModal
+  | typeof openDeleteCardModal
   | typeof closeModal
   | typeof changeListName
   | typeof changeCardName
@@ -29,6 +33,10 @@ export type Action = ReturnType<
 export const openNewListModal = () => <const>{ type: 'OPEN_NEW_LIST_MODAL' };
 export const openNewCardModal = (listId: string) =>
   <const>{ type: 'OPEN_NEW_CARD_MODAL', payload: { listId } };
+export const openDeleteListModal = (listId: string) =>
+  <const>{ type: 'OPEN_DELETE_LIST_MODAL', payload: { listId } };
+export const openDeleteCardModal = (payload: { listId: string; cardId: string }) =>
+  <const>{ type: 'OPEN_DELETE_CARD_MODAL', payload };
 export const closeModal = () => <const>{ type: 'CLOSE_MODAL' };
 export const changeListName = (text: string) =>
   <const>{ type: 'CHANGE_LIST_NAME', payload: { text } };
@@ -44,9 +52,22 @@ export const removeLabel = () => <const>{ type: 'REMOVE_LABEL' };
 export const reducer = (state: State, action: Action) => {
   switch (action.type) {
     case 'OPEN_NEW_LIST_MODAL':
-      return { ...state, status: ModalStatus.NEWLIST };
+      return { ...state, status: ModalStatus.NEW_LIST };
     case 'OPEN_NEW_CARD_MODAL':
-      return { ...state, status: ModalStatus.NEWCARD, listId: action.payload.listId };
+      return { ...state, status: ModalStatus.NEW_CARD, listId: action.payload.listId };
+    case 'OPEN_DELETE_LIST_MODAL':
+      return {
+        ...state,
+        status: ModalStatus.DELETE_LIST,
+        listId: action.payload.listId
+      };
+    case 'OPEN_DELETE_CARD_MODAL':
+      return {
+        ...state,
+        status: ModalStatus.DELETE_CARD,
+        listId: action.payload.listId,
+        cardId: action.payload.cardId
+      };
     case 'CLOSE_MODAL':
       return initialState;
     case 'CHANGE_LIST_NAME':
@@ -76,6 +97,7 @@ export type State = {
   status: ModalStatus;
   listName: string;
   listId: string | undefined;
+  cardId: string | undefined;
   cardName: string;
   label: string;
   color: string;
@@ -86,6 +108,7 @@ export const initialState: State = {
   status: ModalStatus.HIDDEN,
   cardName: '',
   listId: undefined,
+  cardId: undefined,
   listName: '',
   label: '',
   color: colors[0],
@@ -99,3 +122,4 @@ export const selectLabel = (state: State) => state.label;
 export const selectColor = (state: State) => state.color;
 export const selectLabels = (state: State) => state.labels;
 export const selectListId = (state: State) => state.listId;
+export const selectCardId = (state: State) => state.cardId;

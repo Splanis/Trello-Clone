@@ -13,7 +13,7 @@ type Props = {
     | 'space-around';
   style?: CSSProperties;
   page?: boolean;
-  onClick?: () => void;
+  onClick?: (i?: any) => void;
   ref?: any;
 };
 

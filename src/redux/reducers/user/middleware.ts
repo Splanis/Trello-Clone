@@ -43,7 +43,6 @@ export const createBoard = (payload: { name: string; id: string }) => (
   dispatch: Dispatch
 ) => {
   const board = createInitialBoard(payload.name);
-  console.log(payload);
   db.collection('boards')
     .doc(board.id)
     .set(board)

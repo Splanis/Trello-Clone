@@ -10,10 +10,11 @@ type Props = {
   card: ICard;
   index: number;
   onClick?: () => void;
+  onDelete: (cardId: string) => void;
 };
 
 export function Card(props: Props) {
-  const { card, index, onClick } = props;
+  const { card, index, onClick, onDelete } = props;
 
   return (
     <Draggable draggableId={card.id} index={index}>
@@ -24,7 +25,13 @@ export function Card(props: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           isDragging={snapshot.isDragging}>
-          <Text text={card.name} style={styles.text} />
+          <View justify="space-between">
+            <Text text={card.name} style={styles.text} />
+            <View onClick={() => onDelete(card.id)}>
+              <Text text="Delete" style={styles.text} />
+            </View>
+          </View>
+
           <View justify="flex-start" style={styles.card}>
             {card.labels &&
               card.labels.map((l) => (

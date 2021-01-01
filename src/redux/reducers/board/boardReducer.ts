@@ -125,9 +125,38 @@ export const boardReducer = (state: IBoardState = initialState, action: Action) 
           ...state.board,
           lists: state.board.lists.map((list) => {
             if (list.id === action.payload.listId) {
-              return { ...list, cards: [...list.cards, action.payload] };
+              return {
+                ...list,
+                cards: [
+                  ...list.cards,
+                  { id: action.payload.id, name: action.payload.name }
+                ]
+              };
             } else return list;
           })
+        }
+      };
+    case 'DELETE_CARD':
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          lists: state.board.lists.map((list) => {
+            if (list.id === action.payload.listId) {
+              return {
+                ...list,
+                cards: list.cards.filter((card) => card.id !== action.payload.cardId)
+              };
+            } else return list;
+          })
+        }
+      };
+    case 'DELETE_LIST':
+      return {
+        ...state,
+        board: {
+          ...state.board,
+          lists: state.board.lists.filter((list) => list.id !== action.payload.listId)
         }
       };
     default:

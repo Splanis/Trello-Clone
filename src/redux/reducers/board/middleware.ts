@@ -5,6 +5,8 @@ import { IBoard, ILabel } from '../../models/Board';
 import {
   createNewCardAction,
   createNewListAction,
+  deleteCardAction,
+  deleteListAction,
   loadBoardAction,
   loadBoardFailedAction,
   moveCardAction,
@@ -70,4 +72,14 @@ export const createNewCard = (payload: {
 export const createNewList = (payload: { name: string }) => (dispatch: Dispatch) => {
   const id = uuid();
   dispatch(createNewListAction({ name: payload.name, id }));
+};
+
+export const deleteList = (payload: { listId: string }) => (dispatch: Dispatch) => {
+  dispatch(deleteListAction(payload));
+};
+
+export const deleteCard = (payload: { listId: string; cardId: string }) => (
+  dispatch: Dispatch
+) => {
+  dispatch(deleteCardAction(payload));
 };

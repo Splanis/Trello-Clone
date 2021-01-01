@@ -11,10 +11,12 @@ type Props = {
   list: IList;
   index: number;
   onClick: () => void;
+  onDeleteList: () => void;
+  onDeleteCard: (cardId: string) => void;
 };
 
 export function List(props: Props) {
-  const { list, index, onClick } = props;
+  const { list, index, onClick, onDeleteList, onDeleteCard } = props;
 
   const issues = useMemo(
     () => `${list.cards.length} ${list.cards.length === 1 ? 'issue' : 'issues'}`,
@@ -23,13 +25,21 @@ export function List(props: Props) {
 
   return (
     <Draggable key={list.id} draggableId={list.id} index={index}>
-      {(provided) => (
-        <ListStyled ref={provided.innerRef} {...provided.draggableProps}>
+      {(provided, snapshot) => (
+        <ListStyled
+          isDragging={snapshot.isDragging}
+          ref={provided.innerRef}
+          {...provided.draggableProps}>
           <View justify="space-between" style={styles.header}>
             <div style={styles.title} {...provided.dragHandleProps}>
               {list.name}
             </div>
-            <Text text={issues} />
+            <View direction="column">
+              <Text text={issues} />
+              <View onClick={onDeleteList}>
+                <Text text="Delete" />
+              </View>
+            </View>
           </View>
           <View onClick={onClick} style={styles.addCardButton}>
             <Text text="+ Add New Card" style={styles.addCardButtonText} />
@@ -45,7 +55,7 @@ export function List(props: Props) {
                 }}
                 ref={provided.innerRef}>
                 {list.cards.map((card, index) => (
-                  <Card key={card.id} card={card} index={index} />
+                  <Card key={card.id} card={card} index={index} onDelete={onDeleteCard} />
                 ))}
                 {provided.placeholder}
               </div>
@@ -58,10 +68,11 @@ export function List(props: Props) {
 }
 
 // QUICK-FIX: Can't add inline styles
-const ListStyled = styled.div`
+const ListStyled = styled.div<{ isDragging: boolean }>`
   display: flex;
   flex-direction: column;
-  box-shadow: ${theme.shadow.primary};
+  box-shadow: ${({ isDragging }) =>
+    isDragging ? theme.shadow.big : theme.shadow.primary};
   border-radius: 20px;
   background-color: ${theme.colors.secondary};
   padding: 20px 0;

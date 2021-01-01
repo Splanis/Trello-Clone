@@ -8,6 +8,8 @@ export type Action = ReturnType<
   | typeof moveCardAction
   | typeof createNewListAction
   | typeof createNewCardAction
+  | typeof deleteListAction
+  | typeof deleteCardAction
 >;
 
 export const loadBoardAction = (payload: { id: string; name: string; lists: IList[] }) =>
@@ -46,5 +48,17 @@ export const createNewCardAction = (payload: {
 }) =>
   <const>{
     type: 'CREATE_NEW_CARD',
+    payload: payload
+  };
+
+export const deleteListAction = (payload: { listId: string }) =>
+  <const>{
+    type: 'DELETE_LIST',
+    payload: payload
+  };
+
+export const deleteCardAction = (payload: { listId: string; cardId: string }) =>
+  <const>{
+    type: 'DELETE_CARD',
     payload: payload
   };

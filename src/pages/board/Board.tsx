@@ -10,6 +10,8 @@ import {
 import {
   createNewCard,
   createNewList,
+  deleteCard,
+  deleteList,
   loadBoard,
   moveCard,
   moveList,
@@ -19,6 +21,7 @@ import {
 import { State } from '../../redux/reducers/rootReducer';
 import { selectUserId } from '../../redux/reducers/user/userReducer';
 import { ModalWithInput } from '../../ui/ModalWithInput';
+import { SimpleModal } from '../../ui/SimpleModal';
 import { Spinner } from '../../ui/Spinner';
 import { Text } from '../../ui/Text';
 import { theme } from '../../ui/theme';
@@ -34,10 +37,13 @@ import {
   closeModal,
   initialState,
   ModalStatus,
+  openDeleteCardModal,
+  openDeleteListModal,
   openNewCardModal,
   openNewListModal,
   reducer,
   removeLabel,
+  selectCardId,
   selectCardName,
   selectColor,
   selectLabel,
@@ -63,6 +69,7 @@ export function Board() {
   const color = selectColor(modalState);
   const labels = selectLabels(modalState);
   const listId = selectListId(modalState);
+  const cardId = selectCardId(modalState);
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -89,11 +96,11 @@ export function Board() {
     }
   };
 
-  const onCloseModal = () => {
+  const handleCloseModal = () => {
     modalDispatch(closeModal());
   };
 
-  const onCreateNewList = () => {
+  const handleCreateNewList = () => {
     if (!listName) return;
 
     dispatch(
@@ -102,10 +109,10 @@ export function Board() {
       })
     );
 
-    onCloseModal();
+    handleCloseModal();
   };
 
-  const onCreateNewCard = () => {
+  const handleCreateNewCard = () => {
     if (!cardName || !listId) return;
 
     dispatch(
@@ -116,7 +123,23 @@ export function Board() {
       })
     );
 
-    onCloseModal();
+    handleCloseModal();
+  };
+
+  const handleDeleteList = () => {
+    if (!listId) return;
+
+    dispatch(deleteList({ listId }));
+
+    handleCloseModal();
+  };
+
+  const handleDeleteCard = () => {
+    if (!cardId || !listId) return;
+
+    dispatch(deleteCard({ listId, cardId }));
+
+    handleCloseModal();
   };
 
   useEffect(() => {
@@ -166,6 +189,10 @@ export function Board() {
                         list={list}
                         index={index}
                         onClick={() => modalDispatch(openNewCardModal(list.id))}
+                        onDeleteList={() => modalDispatch(openDeleteListModal(list.id))}
+                        onDeleteCard={(cardId: string) =>
+                          modalDispatch(openDeleteCardModal({ listId: list.id, cardId }))
+                        }
                       />
                     ))}
                   {provided.placeholder}
@@ -182,13 +209,13 @@ export function Board() {
         </View>
       </View>
       <CreateCardModal
-        show={modalStatus === ModalStatus.NEWCARD}
+        show={modalStatus === ModalStatus.NEW_CARD}
         name={cardName}
         label={label}
         color={color}
         labels={labels}
-        onClose={onCloseModal}
-        onCreate={onCreateNewCard}
+        onClose={handleCloseModal}
+        onCreate={handleCreateNewCard}
         onChangeCard={(e) => modalDispatch(changeCardName(e.target.value))}
         onChangeLabel={(e) => modalDispatch(changeCardLabel(e.target.value))}
         onSelect={(color: string) => modalDispatch(changeCardColor(color))}
@@ -196,12 +223,24 @@ export function Board() {
         removeLabel={() => modalDispatch(removeLabel())}
       />
       <ModalWithInput
-        show={modalStatus === ModalStatus.NEWLIST}
+        show={modalStatus === ModalStatus.NEW_LIST}
         name={listName}
         placeholder="List Name"
-        onClose={onCloseModal}
-        onCreate={onCreateNewList}
+        onClose={handleCloseModal}
+        onCreate={handleCreateNewList}
         onChange={(e) => modalDispatch(changeListName(e.target.value))}
+      />
+      <SimpleModal
+        show={modalStatus === ModalStatus.DELETE_LIST}
+        text="Are you sure you want to delete this list?"
+        onClose={handleCloseModal}
+        onYes={handleDeleteList}
+      />
+      <SimpleModal
+        show={modalStatus === ModalStatus.DELETE_CARD}
+        text="Are you sure you want to delete this card?"
+        onClose={handleCloseModal}
+        onYes={handleDeleteCard}
       />
     </DragDropContext>
   );
