@@ -41,6 +41,7 @@ export const userReducer = (state: IUserState = initialState, action: Action) =>
 };
 
 // Selectors
-export const selectUser = (state: State) => (state.user.accessToken ? state.user : null);
+export const isLoggedIn = (state: State) => Boolean(state.user.accessToken);
+export const selectUsername = (state: State) => state.user.username;
 export const selectUserId = (state: State) => state.user.uid;
 export const selectBoards = (state: State) => state.user.boards;

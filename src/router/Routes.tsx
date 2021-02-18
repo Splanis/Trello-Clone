@@ -6,13 +6,13 @@ import { Homepage } from '../pages/homepage/Homepage';
 import { Login } from '../pages/login/Login';
 import { Logout } from '../pages/logout/Logout';
 import { State } from '../redux/reducers/rootReducer';
-import { selectUser } from '../redux/reducers/user/userReducer';
+import { isLoggedIn } from '../redux/reducers/user/userReducer';
 
 export function Routes() {
   const state = useSelector((state: State) => state);
-  const user = selectUser(state);
+  const loggedIn = isLoggedIn(state);
 
-  if (user)
+  if (loggedIn)
     return (
       <Switch>
         <Route exact path="/">

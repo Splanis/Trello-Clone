@@ -26,12 +26,12 @@ export function Homepage() {
   };
 
   const handleCreateBoard = () => {
-    if (userId) dispatch(createBoard({ name: newBoardInput, id: userId }));
+    dispatch(createBoard({ name: newBoardInput, id: userId }));
     handleCloseModal();
   };
 
   useEffect(() => {
-    if (userId) dispatch(loadBoards({ userId }));
+    dispatch(loadBoards({ userId }));
     setLoading(false);
   }, [dispatch, userId]);
 
