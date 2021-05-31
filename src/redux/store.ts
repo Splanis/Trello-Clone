@@ -1,26 +1,27 @@
-import { applyMiddleware, createStore } from 'redux';
-import thunk from 'redux-thunk';
-import { rootReducer, State } from './reducers/rootReducer';
+import { configureStore } from '@reduxjs/toolkit';
+import { Auth } from './modules/auth';
+import { rootReducer, RootState } from './rootReducer';
 
-export const loadLocalState = () => {
+const saveAuthToLocalState = (state: RootState) => {
   try {
-    const localState = localStorage.getItem('state');
-    if (!localState) return undefined;
-    return JSON.parse(localState);
-  } catch (error) {
-    return undefined;
-  }
-};
-
-const saveLocalState = (state: State) => {
-  try {
-    localStorage.setItem('state', JSON.stringify(state));
+    localStorage.setItem('auth', JSON.stringify(state.auth));
   } catch (error) {
     console.log(error);
   }
 };
 
-const localState = loadLocalState();
-export const store = createStore(rootReducer, localState, applyMiddleware(thunk));
+const loadAuth = (): { auth: Auth } | undefined => {
+  try {
+    const localState = localStorage.getItem('auth');
+    if (!localState) return undefined;
+    return { auth: JSON.parse(localState) };
+  } catch (error) {
+    return undefined;
+  }
+};
 
-store.subscribe(() => saveLocalState(store.getState()));
+export const store = configureStore({
+  reducer: rootReducer,
+  preloadedState: loadAuth()
+});
+store.subscribe(() => saveAuthToLocalState(store.getState()));

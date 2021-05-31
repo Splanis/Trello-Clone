@@ -1,25 +1,23 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { Board } from '../pages/board/Board';
+import { BoardPage } from '../pages/board/BoardPage';
 import { Homepage } from '../pages/homepage/Homepage';
 import { Login } from '../pages/login/Login';
 import { Logout } from '../pages/logout/Logout';
-import { State } from '../redux/reducers/rootReducer';
-import { isLoggedIn } from '../redux/reducers/user/userReducer';
+import { selectIsAuthenticated } from '../redux/modules/auth.selectors';
 
 export function Routes() {
-  const state = useSelector((state: State) => state);
-  const loggedIn = isLoggedIn(state);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  if (loggedIn)
+  if (isAuthenticated)
     return (
       <Switch>
         <Route exact path="/">
           <Homepage />
         </Route>
         <Route exact path="/board/:id">
-          <Board />
+          <BoardPage />
         </Route>
         <Route exact path="/logout">
           <Logout />

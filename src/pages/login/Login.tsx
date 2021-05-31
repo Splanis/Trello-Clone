@@ -1,23 +1,18 @@
 import React, { CSSProperties } from 'react';
 import { useDispatch } from 'react-redux';
 import googleLogo from '../../assets/google.png';
-import { signIn } from '../../redux/reducers/user/middleware';
-import { Text } from '../../ui/Text';
-import { theme } from '../../ui/theme';
-import { View } from '../../ui/View';
+import { signIn } from '../../redux/middlewares/auth';
+import { Text } from '../../ui-components/Text';
+import { theme } from '../../ui-components/theme';
+import { View } from '../../ui-components/View';
 
 export function Login() {
   const dispatch = useDispatch();
 
-  const handleClick = () => {
-    dispatch(signIn());
-  };
-
   return (
     <View page direction="column">
-      {/* <Text text="Login" /> */}
-      <View style={styles.button} onClick={handleClick}>
-        <img style={styles.logo} src={googleLogo} alt="google" />{' '}
+      <View style={styles.button} onClick={() => dispatch(signIn())}>
+        <img style={styles.logo} src={googleLogo} alt="google" />
         <Text text="Sign in with Google" fontSize={20} />
       </View>
     </View>

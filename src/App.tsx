@@ -4,15 +4,16 @@ import { BrowserRouter } from 'react-router-dom';
 import { NavigationBar } from './navigation/NavigationBar';
 import { store } from './redux/store';
 import { Routes } from './router/Routes';
-import { GlobalStyle } from './ui/GlobalStyle';
+import { GlobalStyle } from './ui-components/GlobalStyle';
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Provider store={store}>
-        <GlobalStyle /> <NavigationBar />
+    <Provider store={store}>
+      <BrowserRouter>
+        <GlobalStyle />
+        <NavigationBar />
         <Routes />
-      </Provider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </Provider>
   );
 }

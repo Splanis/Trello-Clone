@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { signOut } from '../../redux/reducers/user/middleware';
+import { signOut } from '../../redux/modules/auth';
 
 export function Logout() {
   const dispatch = useDispatch();
