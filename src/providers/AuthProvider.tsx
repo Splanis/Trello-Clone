@@ -29,11 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return [];
   });
 
-  console.log(user);
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      console.log(firebaseUser);
       if (firebaseUser) {
         const adaptedUser = adaptFirebaseUser(firebaseUser);
         saveToLocalStorage(AUTH_LOCAL_STORAGE_KEY, adaptedUser);
@@ -53,7 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const unsubscribe = getUserBoardsCollection(user.userId).onSnapshot((snapshot) => {
       const doc = snapshot.data();
-      console.log(doc);
       if (doc && areUserBoards(doc.boards)) {
         setBoards(doc.boards);
         saveToLocalStorage(USER_BOARDS_LOCAL_STORAGE_KEY, doc.boards);

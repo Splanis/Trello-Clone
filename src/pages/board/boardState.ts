@@ -203,7 +203,7 @@ export const reducer = (state: BoardState = initialState, action: Action) => {
       };
     case 'CREATE_NEW_LIST':
       if (!state.board) return state;
-      console.log(action.payload);
+
       return {
         ...state,
         board: {

@@ -51,8 +51,6 @@ function SidebarView() {
     dispatch(deleteCard({ listId, cardId }));
   };
 
-  console.log(status);
-
   if (status === SidebarStatus.CREATING_NEW_CARD) return <CreateCardSidebar />;
 
   if (status === SidebarStatus.CREATING_NEW_LIST) return <CreateListSidebar />;

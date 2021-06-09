@@ -13,8 +13,6 @@ export function NavigationBar() {
   const { isAuthenticated, username } = useAuth();
   const toggleTheme = useToggleTheme();
 
-  console.log(isAuthenticated);
-
   return (
     <Navigation justify="space-between">
       <LinkStyled to="/">
