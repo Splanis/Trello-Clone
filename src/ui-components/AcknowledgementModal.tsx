@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import Modal from 'react-modal';
 import { Button } from './Button';
 import { modalStyles } from './modalStyles';
-import { Text } from './Text';
+import { Typography } from './Typography';
 import { View } from './View';
 
 type Props = {
@@ -21,15 +21,14 @@ export function AcknowledgementModal(props: Props) {
       ariaHideApp={false}
       onRequestClose={onClose}
       style={modalStyles}>
-      <Text text={text} fontSize={20} />
+      <Typography>{text}</Typography>
       <View>
-        <Button
-          onClick={onClose}
-          title="No"
-          variant="alternative"
-          style={styles.button}
-        />
-        <Button onClick={onYes} title="Yes" variant="primary" style={styles.button} />
+        <Button onClick={onClose} variant="secondary" style={styles.button}>
+          No
+        </Button>
+        <Button onClick={onYes} style={styles.button}>
+          Yes
+        </Button>
       </View>
     </Modal>
   );

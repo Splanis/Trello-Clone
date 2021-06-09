@@ -1,40 +1,44 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, useEffect, useMemo } from 'react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
-import { useDispatch, useSelector } from 'react-redux';
-import { List } from '../../../models/Board';
-import { loadBoard } from '../../../redux/middlewares/board';
-import { moveCard, moveList } from '../../../redux/modules/board';
-import { unloadBoard } from '../../../redux/modules/board.actions';
+import { HiPlusSm } from 'react-icons/hi';
+import styled, { keyframes } from 'styled-components';
+import { getBoardCollection } from '../../../firebase/collections';
+import { saveBoardToFirestore } from '../../../firebase/services/board';
+import { isBoard, List } from '../../../models/Board';
+import { Theme, theme } from '../../../theme/theme';
+import { Button } from '../../../ui-components/Button';
+import { View } from '../../../ui-components/View';
+import { useBoard } from '../BoardProvider';
 import {
-  selectAllLists,
+  loadBoardFailed,
+  loadBoardStarted,
+  loadBoardSuccessful,
+  moveCard,
+  moveList,
+  openNewListSidebar,
   selectBoard,
   selectBoardError,
-  selectBoardIsLoading
-} from '../../../redux/modules/board.selectors';
-import { saveBoard } from '../../../services/saveBoard';
-import { Button } from '../../../ui-components/Button';
-import { Input } from '../../../ui-components/Input';
-import { Spinner } from '../../../ui-components/Spinner';
-import { Text } from '../../../ui-components/Text';
-import { theme } from '../../../ui-components/theme';
-import { View } from '../../../ui-components/View';
-import { useBoardUIState } from '../context/BoardModalProvider';
-import { BoardModals } from './BoardModals';
+  selectBoardLoading,
+  selectBoardQuery,
+  selectSidebarStatus,
+  unloadBoard
+} from '../boardState';
+import './animation.css';
 import { ListView } from './ListView';
 
 export function Board({ id }: { id: string }) {
-  const dispatch = useDispatch();
-  const lists = useSelector(selectAllLists);
-  const isLoading = useSelector(selectBoardIsLoading);
-  const error = useSelector(selectBoardError);
-  const board = useSelector(selectBoard);
-  const { openNewListModal } = useBoardUIState();
-  const [query, setQuery] = useState('');
-  const listsToDisplay = useMemo(() => {
-    if (!query) return lists;
+  const { state, dispatch } = useBoard();
+  const board = selectBoard(state);
+  const error = selectBoardError(state);
+  const isLoading = selectBoardLoading(state);
+  const query = selectBoardQuery(state);
+  const sidebarStatus = selectSidebarStatus(state);
 
-    return filterListsByQuery(lists, query);
-  }, [lists, query]);
+  const listsToDisplay = useMemo(() => {
+    if (!query) return board?.lists || [];
+
+    return filterCardsByQuery(query, board?.lists) || [];
+  }, [board?.lists, query]);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -62,71 +66,81 @@ export function Board({ id }: { id: string }) {
   };
 
   useEffect(() => {
-    dispatch(loadBoard({ boardId: id }));
+    dispatch(loadBoardStarted());
+
+    const unsubscribe = getBoardCollection(id).onSnapshot(
+      (snapshot) => {
+        const doc = snapshot.data();
+        if (isBoard(doc)) return dispatch(loadBoardSuccessful(doc));
+        return dispatch(loadBoardFailed('Something went wrong'));
+      },
+      (error) => dispatch(loadBoardFailed(error.message))
+    );
 
     return () => {
-      dispatch(unloadBoard());
+      unsubscribe();
     };
   }, [id, dispatch]);
 
   useEffect(() => {
     if (!board) return;
 
-    saveBoard(board);
+    saveBoardToFirestore(board);
   }, [board, dispatch]);
 
-  if (error) return <View page>{error}</View>;
+  useEffect(() => {
+    return () => dispatch(unloadBoard());
+  }, [dispatch]);
 
-  if (isLoading || !board)
-    return (
-      <View page>
-        <Spinner />
-      </View>
-    );
+  if (error) return <View style={{ alignSelf: 'center', width: '100%' }}>{error}</View>;
+
+  if (isLoading) return <Skeleton />;
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <View
-        page
-        justify="flex-start"
-        align="flex-start"
-        direction="column"
-        style={styles.container}>
-        <View style={styles.header}>
-          <Text fontSize={30} text={board.name} style={{ marginRight: 20 }} />
-          <Input value={query} onChange={setQuery} placeholder="search..." />
-        </View>
-        <View align="flex-start" justify="flex-start">
-          <Droppable
-            droppableId="droppable-board"
-            type="droppable-list"
-            direction="horizontal">
-            {(provided) => (
-              <div ref={provided.innerRef}>
-                <View style={styles.lists}>
-                  {listsToDisplay.map((list, index) => (
-                    <ListView key={list.id} list={list} index={index} />
-                  ))}
-                  {provided.placeholder}
-                </View>
-              </div>
-            )}
-          </Droppable>
-          <Button
-            variant="alternative"
-            title="+ Add New List"
-            onClick={openNewListModal}
-            style={{ width: 250 }}
-          />
-        </View>
-      </View>
-      <BoardModals />
-    </DragDropContext>
+    <BoardContainer noWrap justify="flex-start" align="flex-start">
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable
+          droppableId="droppable-board"
+          type="droppable-list"
+          direction="horizontal">
+          {(provided) => (
+            <div ref={provided.innerRef}>
+              <View align="flex-start" noWrap>
+                {listsToDisplay.map((list, index) => (
+                  <ListView key={list.id} list={list} index={index} />
+                ))}
+                {provided.placeholder}
+              </View>
+            </div>
+          )}
+        </Droppable>
+        <Button
+          style={{ width: 300, margin: '0 10px', padding: 12 }}
+          variant="secondary"
+          onClick={() => dispatch(openNewListSidebar())}>
+          <>
+            <HiPlusSm />
+            Add New List
+          </>
+        </Button>
+      </DragDropContext>
+    </BoardContainer>
   );
 }
 
-const filterListsByQuery = (lists: List[], query: string) =>
-  lists.reduce<List[]>((acc, list) => {
+function Skeleton() {
+  return (
+    <View justify="flex-start" align="flex-start" style={{ marginTop: 50, padding: 30 }}>
+      <SkeletonList height={250} />
+      <SkeletonList height={500} />
+      <SkeletonList height={350} />
+      <SkeletonList height={450} />
+    </View>
+  );
+}
+
+const filterCardsByQuery = (query: string, lists?: List[]) =>
+  lists?.reduce<List[]>((acc, list) => {
     const cardsIncludeQuery = list.cards.filter((card) =>
       card.name.toUpperCase().includes(query.toUpperCase())
     );
@@ -136,29 +150,31 @@ const filterListsByQuery = (lists: List[], query: string) =>
     return acc;
   }, []);
 
-type Styles = {
-  container: CSSProperties;
-  addListButton: CSSProperties;
-  addListButtonText: CSSProperties;
-  lists: CSSProperties;
-  header: CSSProperties;
-};
-
-const styles: Styles = {
-  container: { padding: '80px 20px 20px 20px', overflowX: 'scroll' },
-  header: { marginBottom: 20, alignSelf: 'center' },
-  lists: { display: 'flex', alignItems: 'flex-start' },
-  addListButton: {
-    padding: '0 20px',
-    margin: '0 30px 0 10px',
-    boxShadow: theme.shadow.primary,
-    fontSize: '1.3rem',
-    fontWeight: 700,
-    borderRadius: '20px',
-    backgroundColor: theme.colors.alternative,
-    width: '250px',
-    height: '50px',
-    cursor: 'pointer'
+const loadAnimation = (theme: Theme) => keyframes`
+  0% {
+    background-color: ${theme.colors.background.alternative};
   },
-  addListButtonText: { color: theme.colors.primary }
-};
+  50% {
+    background-color: ${theme.colors.background.secondary};
+  },
+  100% {
+    background-color: ${theme.colors.background.alternative};
+  }
+`;
+
+// marginTop: sidebarStatus !== SidebarStatus.HIDDEN ? 0 : 40
+//  paddingLeft: sidebarStatus !== SidebarStatus.HIDDEN ? 300 : 30,
+const BoardContainer = styled(View)`
+  padding: 15px;
+  margin-top: 55px;
+  flex: 1;
+  height: 100%;
+`;
+
+const SkeletonList = styled.div<{ height: number }>`
+  border-radius: 20px;
+  width: 300px;
+  height: ${(props) => `${props.height}px`};
+  margin: 0 10px;
+  animation: ${({ theme }) => loadAnimation(theme)} 2s infinite;
+`;

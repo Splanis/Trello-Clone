@@ -1,20 +1,24 @@
 import React, { CSSProperties } from 'react';
 import Modal from 'react-modal';
+import { styled } from '../theme/theme';
 import { Button } from './Button';
+import { Input } from './Input';
 import { modalStyles } from './modalStyles';
+import { Typography } from './Typography';
 import { View } from './View';
 
 type Props = {
   isVisible: boolean;
   name: string;
   placeholder: string;
+  error?: string;
   onClose: () => void;
   onCreate: () => void;
-  onChange: (e: any) => void;
+  onChange: (text: string) => void;
 };
 
 export function ModalWithInput(props: Props) {
-  const { isVisible, name, placeholder, onClose, onCreate, onChange } = props;
+  const { isVisible, name, placeholder, error, onClose, onCreate, onChange } = props;
 
   return (
     <Modal
@@ -22,30 +26,23 @@ export function ModalWithInput(props: Props) {
       ariaHideApp={false}
       onRequestClose={onClose}
       style={modalStyles}>
-      <input
-        style={styles.input}
-        type="text"
-        value={name}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
+      <Input placeholder={placeholder} onChange={onChange} value={name} />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       <View>
-        <Button
-          onClick={onClose}
-          title="Cancel"
-          variant="alternative"
-          style={styles.button}
-        />
-        <Button
-          onClick={onCreate}
-          title="Create"
-          variant="primary"
-          style={styles.button}
-        />
+        <Button onClick={onClose} variant="secondary" style={styles.button}>
+          Cancel
+        </Button>
+        <Button onClick={onCreate} style={styles.button}>
+          Create
+        </Button>
       </View>
     </Modal>
   );
 }
+
+const ErrorMessage = styled(Typography)`
+  color: ${({ theme }) => theme.colors.common.red};
+`;
 
 type Styles = {
   input: CSSProperties;

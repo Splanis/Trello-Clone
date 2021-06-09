@@ -1,11 +1,7 @@
-import React, { CSSProperties, ReactNode } from 'react';
+import { styled } from '../theme/theme';
 
-type Props = { onClick: () => void; children: ReactNode; style?: CSSProperties };
+type Props = { onClick: () => void };
 
-export function Pressable({ onClick, children, style }: Props) {
-  return (
-    <div onClick={onClick} style={style}>
-      {children}
-    </div>
-  );
-}
+export const Pressable = styled.div<Props>`
+  cursor: pointer;
+`;

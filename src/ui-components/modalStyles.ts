@@ -1,4 +1,4 @@
-import { theme } from './theme';
+import { theme } from '../theme/theme';
 
 export const modalStyles = {
   content: {
@@ -8,7 +8,7 @@ export const modalStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
-    backgroundColor: theme.colors.light,
+    backgroundColor: '#c4c4c4',
     opacity: 1
   }
 };

@@ -1,14 +1,19 @@
-import React, { CSSProperties, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { FaTrash } from 'react-icons/fa';
-import styled from 'styled-components';
+import { HiPlusSm } from 'react-icons/hi';
 import { List } from '../../../models/Board';
-import { Pressable } from '../../../ui-components/Pressable';
-import { theme } from '../../../ui-components/theme';
-import { View } from '../../../ui-components/View';
+import { styled } from '../../../theme/theme';
 import { Button } from '../../../ui-components/Button';
-import { useBoardUIState } from '../context/BoardModalProvider';
+import { Typography } from '../../../ui-components/Typography';
+import { View } from '../../../ui-components/View';
+import { useBoard } from '../BoardProvider';
+import {
+  openDeleteCardSidebar,
+  openDeleteListSidebar,
+  openNewCardSidebar
+} from '../boardState';
 import { CardView } from './CardView';
+import { ExpandedSettings } from './ExpandedSettings';
 
 type Props = {
   list: List;
@@ -16,12 +21,15 @@ type Props = {
 };
 
 export function ListView({ list, index }: Props) {
-  const {
-    openDeleteListModal,
-    openNewCardModal,
-    openDeleteCardModal
-  } = useBoardUIState();
+  const { dispatch } = useBoard();
   const issues = useMemo(() => list.cards.length.toString(), [list.cards.length]);
+  const [hasExpandedSettings, setHasExpandedSettings] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const toggleIsEditing = () => setIsEditing((prev) => !prev);
+  const toggleHasExpandedSettings = () => {
+    setIsEditing(false);
+    setHasExpandedSettings((prev) => !prev);
+  };
 
   return (
     <Draggable key={list.id} draggableId={list.id} index={index}>
@@ -30,15 +38,26 @@ export function ListView({ list, index }: Props) {
           isDragging={snapshot.isDragging}
           ref={provided.innerRef}
           {...provided.draggableProps}>
-          <View justify="space-between" style={styles.header}>
-            <View>
-              <TitleView {...provided.dragHandleProps}>{list.name}</TitleView>
-              <IssuesView>({issues})</IssuesView>
-            </View>
-            <Pressable onClick={() => openDeleteListModal(list.id)}>
-              <FaTrash color="red" />
-            </Pressable>
-          </View>
+          <Header justify="space-between" align="flex-start" noWrap>
+            <TitleContainer justify="flex-start">
+              {isEditing ? (
+                <EditingInput value={list.name} autoFocus />
+              ) : (
+                <View>
+                  <Title size="large" {...provided.dragHandleProps}>
+                    {list.name}
+                  </Title>
+                  {/* <Issues>({issues})</Issues> */}
+                </View>
+              )}
+            </TitleContainer>
+            <Settings
+              hasExpandedSettings={hasExpandedSettings}
+              onDelete={() => dispatch(openDeleteListSidebar(list.id))}
+              toggleHasExpandedSettings={toggleHasExpandedSettings}
+              toggleIsEditing={toggleIsEditing}
+            />
+          </Header>
           <Droppable droppableId={list.id} type="droppable-cards" direction="vertical">
             {(provided, snapshot) => (
               <CardsContainer
@@ -48,9 +67,12 @@ export function ListView({ list, index }: Props) {
                   <CardView
                     key={card.id}
                     card={card}
+                    listId={list.id}
                     index={index}
                     onDelete={() =>
-                      openDeleteCardModal({ listId: list.id, cardId: card.id })
+                      dispatch(
+                        openDeleteCardSidebar({ listId: list.id, cardId: card.id })
+                      )
                     }
                   />
                 ))}
@@ -58,7 +80,9 @@ export function ListView({ list, index }: Props) {
               </CardsContainer>
             )}
           </Droppable>
-          <Button title="+ Add New Card" onClick={() => openNewCardModal(list.id)} />
+          <Button onClick={() => dispatch(openNewCardSidebar(list.id))}>
+            <HiPlusSm /> Add New Card
+          </Button>
         </ListStyled>
       )}
     </Draggable>
@@ -68,66 +92,73 @@ export function ListView({ list, index }: Props) {
 const ListStyled = styled.div<{ isDragging: boolean }>`
   display: flex;
   flex-direction: column;
-  box-shadow: ${({ isDragging }) =>
+  box-shadow: ${({ isDragging, theme }) =>
     isDragging ? theme.shadow.big : theme.shadow.primary};
-  border-radius: 20px;
-  background-color: ${theme.colors.white};
+  border-radius: 2px;
+  background-color: ${({ theme }) => theme.colors.background.alternative};
   padding: 20px 10px;
-  width: 250px;
+  width: 300px;
+  overflow: scroll;
+  flex-grow: 0;
   margin: 0 10px;
 `;
 
 const CardsContainer = styled.div<{ isDraggingOver: boolean }>`
-  background: ${({ isDraggingOver }) =>
+  background: ${({ theme, isDraggingOver }) =>
     isDraggingOver
       ? `repeating-linear-gradient(
     45deg,
-    ${theme.colors.white},
-    ${theme.colors.white} 5px,
-    ${theme.colors.gray} 5px,
-    ${theme.colors.gray} 10px
+    ${theme.colors.background.alternative},
+    ${theme.colors.background.alternative} 5px,
+    ${theme.colors.background.secondary} 5px,
+    ${theme.colors.background.secondary} 10px
   );`
-      : theme.colors.white};
+      : theme.colors.background.alternative};
   display: flex;
   flex-direction: column;
   margin: 10px 0;
   min-height: 1px;
   scrollbar-width: thin;
-  scrollbar-color: ${theme.colors.dark} ${theme.colors.primary};
+  scrollbar-color: ${({ theme }) => theme.colors.dark + theme.colors.primary};
+  /* /* ${({ theme }) => theme.colors.primary}; */
 `;
 
-const IssuesView = styled.div`
-  font-size: 1.2rem;
+const Header = styled(View)`
+  padding: 0 10px;
+`;
+
+const EditingInput = styled.textarea`
+  width: 170px;
+  resize: none;
+  display: flex;
+  align-items: center;
+  outline: 0;
+  /* background-color: red; */
+  background-color: ${({ theme }) => theme.colors.background.alternative};
+  color: ${({ theme }) => theme.colors.font.primary};
+  font-size: ${({ theme }) => theme.sizing.font.large};
+  font-weight: 700;
+  font-family: ${({ theme }) => theme.fonts.primary};
+  border: none;
+  height: auto;
+  overflow: hidden;
+`;
+
+const Issues = styled(Typography)`
   font-weight: 400;
   margin-left: 5px;
 `;
 
-const TitleView = styled.div`
-  font-size: 1.3rem;
+const Title = styled(Typography)`
   font-weight: 700;
-  flex: 2;
+  text-align: left;
   word-break: 'break-all';
 `;
 
-type Styles = {
-  title: CSSProperties;
-  header: CSSProperties;
-  cards: CSSProperties;
-};
+const TitleContainer = styled(View)`
+  width: 170px;
+`;
 
-const styles: Styles = {
-  title: {
-    fontSize: '1.3rem',
-    fontWeight: 700,
-    flex: 2,
-    wordBreak: 'break-all'
-  },
-  header: { padding: '0 10px' },
-  cards: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: 1,
-    scrollbarWidth: 'thin',
-    scrollbarColor: `${theme.colors.dark} ${theme.colors.primary}`
-  }
-};
+const Settings = styled(ExpandedSettings)`
+  width: 100px;
+`;

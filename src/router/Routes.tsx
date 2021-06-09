@@ -1,26 +1,25 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { BoardPage } from '../pages/board/BoardPage';
-import { Homepage } from '../pages/homepage/Homepage';
-import { Login } from '../pages/login/Login';
-import { Logout } from '../pages/logout/Logout';
-import { selectIsAuthenticated } from '../redux/modules/auth.selectors';
+import { HomePage } from '../pages/homepage/HomePage';
+import { LoginPage } from '../pages/login/LoginPage';
+import { LogoutPage } from '../pages/logout/LogoutPage';
+import { useAuth } from '../providers/AuthProvider';
 
 export function Routes() {
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { isAuthenticated } = useAuth();
 
   if (isAuthenticated)
     return (
       <Switch>
         <Route exact path="/">
-          <Homepage />
+          <HomePage />
         </Route>
         <Route exact path="/board/:id">
           <BoardPage />
         </Route>
         <Route exact path="/logout">
-          <Logout />
+          <LogoutPage />
         </Route>
         <Redirect to="/" />
       </Switch>
@@ -29,7 +28,7 @@ export function Routes() {
   return (
     <Switch>
       <Route exact path="/login">
-        <Login />
+        <LoginPage />
       </Route>
       <Redirect to="/login" />
     </Switch>

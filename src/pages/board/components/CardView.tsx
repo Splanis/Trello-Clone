@@ -1,20 +1,32 @@
-import React, { CSSProperties } from 'react';
+import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { FaTrash } from 'react-icons/fa';
-import styled from 'styled-components';
 import { Card } from '../../../models/Board';
-import { Pressable } from '../../../ui-components/Pressable';
-import { Text } from '../../../ui-components/Text';
-import { theme } from '../../../ui-components/theme';
+import { styled } from '../../../theme/theme';
+import { Typography } from '../../../ui-components/Typography';
 import { View } from '../../../ui-components/View';
+import { useBoard } from '../BoardProvider';
+import { deleteLabel, openViewCardSidebar } from '../boardState';
+import { ExpandedSettings } from './ExpandedSettings';
+import { Label } from './Label';
+import { Pressable } from '../../../ui-components/Pressable';
 
 type Props = {
   card: Card;
+  listId: string;
   index: number;
   onDelete: () => void;
 };
 
-export function CardView({ card, index, onDelete }: Props) {
+export function CardView({ card, listId, index, onDelete }: Props) {
+  const { dispatch } = useBoard();
+  const [hasExpandedSettings, setHasExpandedSettings] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const toggleIsEditing = () => setIsEditing((prev) => !prev);
+  const toggleHasExpandedSettings = () => {
+    setIsEditing(false);
+    setHasExpandedSettings((prev) => !prev);
+  };
+
   return (
     <Draggable key={card.id} draggableId={card.id} index={index}>
       {(provided, snapshot) => (
@@ -23,30 +35,43 @@ export function CardView({ card, index, onDelete }: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           isDragging={snapshot.isDragging}>
-          <View justify="space-between" style={{ margin: 8 }}>
-            <Text text={card.name} style={styles.text} />
+          <View justify="space-between" style={{ marginBottom: 15 }}>
+            <Pressable onClick={() => dispatch(openViewCardSidebar({ card, listId }))}>
+              <CardName>{card.name}</CardName>
+            </Pressable>
           </View>
           {hasLabels(card.labels) && (
-            <View justify="flex-start" style={{ flexWrap: 'wrap' }}>
+            <View justify="flex-start" style={{ flexWrap: 'wrap', marginTop: 10 }}>
               {card.labels.map((l) => (
-                <Text
+                <Label
                   key={l.label}
-                  style={{ ...styles.label, backgroundColor: l.color }}
-                  text={l.label}
+                  color={l.color}
+                  label={l.label}
+                  canDelete={isEditing}
+                  onDelete={() => {
+                    dispatch(deleteLabel({ labelId: l.id, cardId: card.id, listId }));
+                  }}
                 />
               ))}
             </View>
           )}
-          <View justify="flex-end" style={{ marginLeft: 5 }}>
-            <Pressable onClick={onDelete}>
-              <FaTrash size={22} />
-            </Pressable>
-
-            {card.assignee && (
+          <View
+            justify="space-between"
+            style={{ marginLeft: 5, marginTop: 15, width: '100%' }}>
+            {/* <CardId size="small">{card.id}</CardId> */}
+            {card.assignee ? (
               <div>
                 <AssigneePhoto src={card.assignee?.photo} alt="user_image" />
               </div>
+            ) : (
+              <div />
             )}
+            <ExpandedSettings
+              hasExpandedSettings={hasExpandedSettings}
+              onDelete={onDelete}
+              toggleHasExpandedSettings={toggleHasExpandedSettings}
+              toggleIsEditing={toggleIsEditing}
+            />
           </View>
         </CardStyled>
       )}
@@ -57,11 +82,12 @@ export function CardView({ card, index, onDelete }: Props) {
 const hasLabels = <T,>(labels: T[]) => labels.length > 0;
 
 const CardStyled = styled.div<{ isDragging: boolean }>`
-  padding: 10px;
-  background: ${theme.colors.gray};
+  padding: 15px;
+  background-color: ${({ theme }) => theme.colors.background.secondary};
   border-radius: 2px;
-  margin: 15px 5px;
-  box-shadow: ${({ isDragging }) => isDragging && theme.shadow.big};
+  margin: 5px;
+  box-shadow: ${({ isDragging, theme }) =>
+    isDragging ? theme.shadow.big : theme.shadow.primary};
 `;
 
 const AssigneePhoto = styled.img`
@@ -71,22 +97,10 @@ const AssigneePhoto = styled.img`
   margin-left: 5px;
 `;
 
-type Styles = {
-  card: CSSProperties;
-  label: CSSProperties;
-  text: CSSProperties;
-};
+const CardName = styled(Typography)`
+  word-break: break-all;
+`;
 
-const styles: Styles = {
-  card: { marginTop: 20 },
-  text: {
-    wordBreak: 'break-all'
-  },
-  label: {
-    margin: '3px',
-    padding: '2px 12px',
-    borderRadius: 30,
-    color: 'white',
-    opacity: 0.7
-  }
-};
+const CardId = styled(Typography)`
+  font-weight: 400;
+`;

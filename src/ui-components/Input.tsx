@@ -1,6 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-import { theme } from './theme';
+import { styled } from '../theme/theme';
 
 type Props = {
   value: string;
@@ -20,11 +19,13 @@ export function Input({ value, onChange, placeholder }: Props) {
 }
 
 const InputStyled = styled.input`
-  background-color: ${theme.colors.gray};
-  padding: 10px 15px;
-  border-radius: 16px;
+  background-color: ${({ theme }) => theme.colors.background.secondary};
+  color: ${({ theme }) => theme.colors.font.primary};
+  font-size: ${({ theme }) => theme.sizing.font.base};
+  padding: 6px 12px;
+  border-radius: 2px;
+  width: 100%;
   border: none;
-  font-size: 18px;
   &:focus,
   &:focus,
   &:focus {

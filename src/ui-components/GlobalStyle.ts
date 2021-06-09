@@ -1,5 +1,4 @@
 import { createGlobalStyle } from 'styled-components';
-import { theme } from './theme';
 
 export const GlobalStyle = createGlobalStyle`
     * {
@@ -9,8 +8,8 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     body {
-        background-color: ${theme.colors.light};
-        font-family:  ${theme.fonts.primary};
-        height: 100vh;  
+        background-color: ${({ theme }) => theme.colors.background.primary};
+        font-family: ${({ theme }) => theme.fonts.primary};
+        max-height: 100vh;
     }
 `;

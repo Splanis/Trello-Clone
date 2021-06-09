@@ -1,9 +1,9 @@
-import React, { CSSProperties, ReactNode } from 'react';
+import { styled } from '../theme/theme';
 
 type Props = {
-  children: ReactNode;
   align?: 'center' | 'flex-start' | 'flex-end' | 'stretch';
-  direction?: 'row' | 'column';
+  column?: boolean;
+  noWrap?: boolean;
   justify?:
     | 'center'
     | 'flex-start'
@@ -11,36 +11,13 @@ type Props = {
     | 'space-between'
     | 'space-evenly'
     | 'space-around';
-  style?: CSSProperties;
-  page?: boolean;
-  onClick?: (i?: any) => void;
   ref?: any;
 };
 
-export function View(props: Props) {
-  const {
-    children,
-    page = false,
-    align = 'center',
-    justify = 'center',
-    direction = 'row',
-    style,
-    onClick
-  } = props;
-
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        display: 'flex',
-        height: page ? '100vh' : 'auto',
-        cursor: onClick && 'pointer',
-        alignItems: align,
-        justifyContent: justify,
-        flexDirection: direction,
-        ...style
-      }}>
-      {children}
-    </div>
-  );
-}
+export const View = styled.div<Props>`
+  display: flex;
+  align-items: ${({ align }) => align ?? 'center'};
+  justify-content: ${({ justify }) => justify ?? 'center'};
+  flex-direction: ${({ column }) => (column ? 'column' : 'row')};
+  flex-wrap: ${({ noWrap }) => (noWrap ? 'nowrap' : 'wrap')};
+`;
