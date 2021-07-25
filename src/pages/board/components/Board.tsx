@@ -104,14 +104,16 @@ export function Board({ id }: { id: string }) {
           type="droppable-list"
           direction="horizontal">
           {(provided) => (
-            <div ref={provided.innerRef}>
-              <View align="flex-start" noWrap>
-                {listsToDisplay.map((list, index) => (
-                  <ListView key={list.id} list={list} index={index} />
-                ))}
-                {provided.placeholder}
-              </View>
-            </div>
+            <View
+              ref={provided.innerRef}
+              align="flex-start"
+              noWrap
+              style={{ height: '100%' }}>
+              {listsToDisplay.map((list, index) => (
+                <ListView key={list.id} list={list} index={index} />
+              ))}
+              {provided.placeholder}
+            </View>
           )}
         </Droppable>
         <Button
@@ -165,10 +167,10 @@ const loadAnimation = (theme: Theme) => keyframes`
 // marginTop: sidebarStatus !== SidebarStatus.HIDDEN ? 0 : 40
 //  paddingLeft: sidebarStatus !== SidebarStatus.HIDDEN ? 300 : 30,
 const BoardContainer = styled(View)`
-  padding: 15px;
-  margin-top: 55px;
-  flex: 1;
+  padding: 20px;
+  padding-top: 60px;
   height: 100%;
+  width: 100%;
 `;
 
 const SkeletonList = styled.div<{ height: number }>`

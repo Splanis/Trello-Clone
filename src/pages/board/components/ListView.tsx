@@ -96,11 +96,10 @@ const ListStyled = styled.div<{ isDragging: boolean }>`
     isDragging ? theme.shadow.big : theme.shadow.primary};
   border-radius: 2px;
   background-color: ${({ theme }) => theme.colors.background.alternative};
-  padding: 20px 10px;
+  padding: 20px 5px;
   width: 300px;
-  overflow: scroll;
-  flex-grow: 0;
   margin: 0 10px;
+  max-height: 100%;
 `;
 
 const CardsContainer = styled.div<{ isDraggingOver: boolean }>`
@@ -118,9 +117,8 @@ const CardsContainer = styled.div<{ isDraggingOver: boolean }>`
   flex-direction: column;
   margin: 10px 0;
   min-height: 1px;
-  scrollbar-width: thin;
-  scrollbar-color: ${({ theme }) => theme.colors.dark + theme.colors.primary};
-  /* /* ${({ theme }) => theme.colors.primary}; */
+  overflow-y: scroll;
+  padding: 0 10px;
 `;
 
 const Header = styled(View)`
@@ -133,7 +131,6 @@ const EditingInput = styled.textarea`
   display: flex;
   align-items: center;
   outline: 0;
-  /* background-color: red; */
   background-color: ${({ theme }) => theme.colors.background.alternative};
   color: ${({ theme }) => theme.colors.font.primary};
   font-size: ${({ theme }) => theme.sizing.font.large};
