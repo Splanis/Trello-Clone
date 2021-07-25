@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
+import { keyframes } from 'styled-components';
 import { addUserBoardToFirestore } from '../../../firebase/services/board';
 import { createInitialBoard } from '../../../models/Board';
 import { UserBoard } from '../../../models/User';
@@ -36,24 +37,32 @@ type BoardsProps = {
 };
 
 function Boards({ boards, onCreateNewBoard: onClick }: BoardsProps) {
+  const hasNoBoards = boards.length === 0;
+
   return (
     <CSSTransition in appear timeout={300} classNames="fade">
       <Container column>
         <Header>
           <Title>My Boards</Title>
-          <Button onClick={onClick} variant="secondary">
-            Create New Board
-          </Button>
+          <AnimatedButton when={hasNoBoards}>
+            <Button onClick={onClick} variant="secondary">
+              Create New Board
+            </Button>
+          </AnimatedButton>
         </Header>
 
         <View align="flex-end">
-          {boards.map((board) => (
-            <LinkStyled key={board.id} to={`/board/${board.id}`}>
-              <Board key={board.id}>
-                <Typography>{board.name}</Typography>
-              </Board>
-            </LinkStyled>
-          ))}
+          {hasNoBoards ? (
+            <Typography size="veryLarge">You have no boards yet</Typography>
+          ) : (
+            boards.map((board) => (
+              <LinkStyled key={board.id} to={`/board/${board.id}`}>
+                <Board>
+                  <Typography>{board.name}</Typography>
+                </Board>
+              </LinkStyled>
+            ))
+          )}
         </View>
         <NewBoardButtonContainer justify="flex-end"></NewBoardButtonContainer>
       </Container>
@@ -86,6 +95,23 @@ const LinkStyled = styled(Link)`
   &:visited {
     color: inherit;
   }
+`;
+
+const buttonAnimation = keyframes`
+   0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+`;
+
+const AnimatedButton = styled.div<{ when: boolean }>`
+  animation: ${buttonAnimation} ${({ when }) => (when ? `1s` : 0)} infinite;
+  animation-timing-function: ease-in-out;
 `;
 
 const Board = styled(View)`
