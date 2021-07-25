@@ -1,4 +1,5 @@
 import React from 'react';
+import { GiNinjaMask } from 'react-icons/gi';
 import googleLogo from '../../assets/google.png';
 import { signInAnonymously, signInWithGoogle } from '../../firebase/services/auth';
 import { styled } from '../../theme/theme';
@@ -6,7 +7,6 @@ import { Page } from '../../ui-components/Page';
 import { Pressable } from '../../ui-components/Pressable';
 import { Typography } from '../../ui-components/Typography';
 import { View } from '../../ui-components/View';
-import { GiNinjaMask } from 'react-icons/gi';
 
 export function LoginPage() {
   return (
@@ -16,10 +16,10 @@ export function LoginPage() {
           <GoogleImage src={googleLogo} alt="google" />
           <Typography>Sign in with Google</Typography>
         </LoginButton>
-        {/* <LoginButton onClick={signInAnonymously}>
+        <LoginButton onClick={signInAnonymously}>
           <AnonymousImage size={30} />
           <Typography>Sign in Anonymously</Typography>
-        </LoginButton> */}
+        </LoginButton>
       </ButtonsContainer>
     </Page>
   );

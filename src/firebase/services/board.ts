@@ -9,11 +9,20 @@ export const addUserBoardToFirestore = async (userId: string, board: Board) => {
   try {
     await getBoardCollection(board.id).set(board);
 
-    await getUsersCollection()
-      .doc(userId)
-      .update({
-        boards: firestoreField.arrayUnion({ name: board.name, id: board.id })
-      });
+    const userDoc = await getUsersCollection().doc(userId).get();
+    if (userDoc.exists) {
+      await getUsersCollection()
+        .doc(userId)
+        .update({
+          boards: firestoreField.arrayUnion({ name: board.name, id: board.id })
+        });
+    } else {
+      await getUsersCollection()
+        .doc(userId)
+        .set({
+          boards: firestoreField.arrayUnion({ name: board.name, id: board.id })
+        });
+    }
   } catch (error) {
     console.log(error);
   }
