@@ -39,21 +39,23 @@ function Boards({ boards, onCreateNewBoard: onClick }: BoardsProps) {
   return (
     <CSSTransition in appear timeout={300} classNames="fade">
       <Container column>
-        <Title>My Boards</Title>
-        <View align="flex-end">
-          {boards.map((board) => (
-            <Board key={board.id}>
-              <LinkStyled key={board.id} to={`/board/${board.id}`}>
-                <Typography>{board.name}</Typography>
-              </LinkStyled>
-            </Board>
-          ))}
-        </View>
-        <NewBoardButtonContainer justify="flex-end">
+        <Header>
+          <Title>My Boards</Title>
           <Button onClick={onClick} variant="secondary">
             Create New Board
           </Button>
-        </NewBoardButtonContainer>
+        </Header>
+
+        <View align="flex-end">
+          {boards.map((board) => (
+            <LinkStyled key={board.id} to={`/board/${board.id}`}>
+              <Board key={board.id}>
+                <Typography>{board.name}</Typography>
+              </Board>
+            </LinkStyled>
+          ))}
+        </View>
+        <NewBoardButtonContainer justify="flex-end"></NewBoardButtonContainer>
       </Container>
     </CSSTransition>
   );
@@ -62,13 +64,20 @@ function Boards({ boards, onCreateNewBoard: onClick }: BoardsProps) {
 const Container = styled(View)`
   padding: 3rem 5rem;
   transition: opacity 300ms, transform 300ms;
+  width: 100%;
+`;
+
+const Header = styled(View)`
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 `;
 
 const Title = styled(Typography)`
   font-size: 3rem;
   align-self: flex-start;
   margin-left: 0.5rem;
-  margin-bottom: 1.5rem;
 `;
 
 const LinkStyled = styled(Link)`

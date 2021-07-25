@@ -1,11 +1,11 @@
-import React, { CSSProperties, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { HiPlusSm } from 'react-icons/hi';
 import styled, { keyframes } from 'styled-components';
 import { getBoardCollection } from '../../../firebase/collections';
 import { saveBoardToFirestore } from '../../../firebase/services/board';
 import { isBoard, List } from '../../../models/Board';
-import { Theme, theme } from '../../../theme/theme';
+import { Theme } from '../../../theme/theme';
 import { Button } from '../../../ui-components/Button';
 import { View } from '../../../ui-components/View';
 import { useBoard } from '../BoardProvider';
